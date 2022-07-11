@@ -17,9 +17,10 @@ app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 ckeditor = CKEditor(app)
 Bootstrap(app)
 
+db_file = "DATABASE_URL" # "sqlite:///blog.db"
 
-##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
+# CONNECT TO DB
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(db_file)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -67,7 +68,9 @@ class Comment(db.Model):
     blog_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'))
     blog = relationship("BlogPost", back_populates="comments")
 
-# db.create_all()
+
+if not os.path.isfile(db_file):
+    db.create_all()
 
 
 def admin_only(fn):
